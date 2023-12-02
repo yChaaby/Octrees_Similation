@@ -25,13 +25,13 @@ class Univert :
         self.ax.set_xlim((-self.size / 2, self.size / 2))
         self.ax.set_ylim((-self.size / 2, self.size / 2))
         self.ax.set_zlim((-self.size / 2, self.size / 2))
-        plt.pause(0.001)
+        plt.pause(3)
         self.ax.clear()
         
 class SolarSystemBody:
     min_display_size = 10
     display_log_base = 1.3
-    def __init__(self,solar_system,masse,position=(0, 0, 0),vitesse=(0, 0, 0),):
+    def __init__(self, solar_system, masse,volume, couleur, position=(0, 0, 0), vitesse=(0, 0, 0),):
         self.solar_system = solar_system
         self.masse = masse
         self.position = position
@@ -40,7 +40,7 @@ class SolarSystemBody:
             math.log(self.masse, self.display_log_base),
             self.min_display_size,
         )
-        self.colour = "Green"
+        self.couleur = couleur
         self.solar_system.add_etoile(self)
     def move(self):
         self.position = (
@@ -52,7 +52,7 @@ class SolarSystemBody:
         self.solar_system.ax.plot(
             *self.position,
             marker="o",
-            markersize=self.display_size,
-            color=self.colour
+            markersize=self.display_size + self.position[0] / 30,
+            color=self.couleur
         )
         
