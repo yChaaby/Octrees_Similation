@@ -1,5 +1,19 @@
 import math
 
+class Rectangle:
+    def __init__(self, x, y, width, height):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+
+    def contains_point(self, point):
+        return (
+            self.x - self.width / 2 <= point[0] <= self.x + self.width / 2
+            and self.y - self.height / 2 <= point[1] <= self.y + self.height / 2
+        )
+
+
 class Vector:
     def __init__(self, x=0, y=0, z=0):
         self.x = x
