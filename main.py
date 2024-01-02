@@ -4,14 +4,20 @@ from Univert import *
 
 solar_system = Univert(500)
 
-body = Etoile(solar_system, 100,couleur='Pink',position=(2,1,-1),vitesse=(5,7,8),)
-body = Etoile(solar_system, 50,couleur="Red",position=(2,3,-2),vitesse=(5,7,8),)
-body = Etoile(solar_system, 50,couleur="Orange",position=(4,1,0) ,vitesse=(5,7,8),)
-body = Etoile(solar_system, 50,couleur="Blue",position=(4,3,1) ,vitesse=(5,7,8),)
-body = Etoile(solar_system, 50,couleur="Green",position=(6,-4,-1) ,vitesse=(5,7,8),)
+
+body = Etoile(solar_system, 50,couleur="black",)
+body = Etoile(solar_system, 50,couleur="yellow",)
+body = Etoile(solar_system, 100,couleur='Pink',)
+body = Etoile(solar_system, 50,couleur="Red",)
+body = Etoile(solar_system, 50,couleur="Orange", )
+body = Etoile(solar_system, 50,couleur="purple",)
+body = Etoile(solar_system, 50,couleur="#2E86C1",)
+body = Etoile(solar_system, 80,couleur="#EC407A",)
+
+
 
 while True:
     solar_system.interaction_calculateur()
     solar_system.update_all()
     solar_system.draw_all()
-    print(body.vitesse)
+    #print(body.vitesse)

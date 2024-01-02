@@ -1,4 +1,6 @@
 import matplotlib.pyplot as plt
+from matplotlib.path import Path
+from matplotlib.markers import MarkerStyle
 from vectors import Vector
 import math
 import itertools
@@ -56,9 +58,19 @@ class Etoile:
         - vitesse : Définit la vitesse du corps. Puisque  la vitesse d’un corps en mouvement a une ampleur et une direction, 
                     elle doit être un vecteur.
     """
-    def __init__(self, theWorld, masse,couleur, position=(0, 0, 0), vitesse=(0, 0, 0),) :
+    def __init__(self, theWorld, masse,couleur, position=None, vitesse=None,) :
         self.theWorld = theWorld
         self.masse = masse
+         #cela générera  des positions et des vitesses initiales aléatoires pour chaque étoile si ces derniers ne sont pas préciser.
+        if position is None:
+            position = (uniform(-100, 100), uniform(-100, 100), uniform(-100, 100))
+        if vitesse is None:
+            vitesse = (
+            uniform(-1, 1) + uniform(-0.1, 0.1),
+            uniform(-1, 1) + uniform(-0.1, 0.1),
+            uniform(-1, 1) + uniform(-0.1, 0.1),
+        )
+            
         self.position = position
         # On convertit le tuple en Vector. l'étoile (*) pour récupérer la valeur stockée dans 'vitesse', à savoir le tuple.
         self.vitesse = Vector(*vitesse)
@@ -100,9 +112,14 @@ class Etoile:
 
     # 2. DESSINER UNE ÉTOILE DANS UN SYSTÈME SOLAIRE !
     def draw(self):
+        #custom_marker_path = Path([(0, 0), (1, 1), (2, 0), (3, 2)])
+
+        # Créer un style de marqueur personnalisé
+        
+        #custom_marker = MarkerStyle(marker=custom_marker_path, fillstyle='none')
         self.theWorld.ax.plot(
             *self.position,
-            marker="o",
+            marker='o',
             markersize=self.display_size + self.position[0] / 30,
             color=self.couleur
         )
@@ -122,7 +139,8 @@ class Etoile:
         distance_mag = distance.get_norme()
         # La force due à la gravité (F = m1*m2 / r**2) !
         force_mag = self.masse * other.masse / (distance_mag ** 2)
-        force = distance.normaliser() * force_mag
+        speed_factor = (1.0 + self.vitesse.get_norme() + other.vitesse.get_norme())/2
+        force = (speed_factor+distance.normaliser()) * (force_mag)
         reverse = 1
         for body in self, other:
             acceleration = force / body.masse

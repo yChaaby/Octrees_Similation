@@ -1,5 +1,5 @@
 import math
-
+from random import *
 class Vector:
     # Un point de cet espace 3D : 
     # Placer le soleil au centre du système solaire, on utilise (0,0,0) :
@@ -16,11 +16,19 @@ class Vector:
  
     # L'ajout de deux vecteurs : 
     def __add__(self, other):
-        return Vector(
-            self.x + other.x,
-            self.y + other.y,
-            self.z + other.z,
-        )
+        if isinstance(other, Vector):
+            return Vector(
+                self.x + other.x,
+                self.y + other.y,
+                self.z + other.z
+            )
+        elif isinstance(other, (int, float)):
+            # Si 'other' est un nombre, ajoutez-le à chaque composante du vecteur
+            return Vector(
+                self.x + other,
+                self.y + other,
+                self.z + other
+            )
     
     """ 
         def modifier(self) :
@@ -89,3 +97,4 @@ class Vector:
 test = Vector(1, 2, 3)
 print(test.get_norme())
 print(test.normaliser())
+print(uniform(-100,100))
