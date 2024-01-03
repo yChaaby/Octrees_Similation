@@ -140,35 +140,9 @@ class Etoile:
         # La force due à la gravité (F = m1*m2 / r**2) !
         force_mag = self.masse * other.masse / (distance_mag ** 2)
         speed_factor = (1.0 + self.vitesse.get_norme() + other.vitesse.get_norme())/2
-        force = (speed_factor+distance.normaliser()) * (force_mag)
+        force = distance.normaliser() * (force_mag+speed_factor )
         reverse = 1
         for body in self, other:
             acceleration = force / body.masse
             body.vitesse += acceleration * reverse
             reverse = -1
-
-# La création de deux nouvelles classes SOLEIL & PLANÈTE de type Etoile : 
-"""
-- la masse a une valeur par défaut, à savoir 10_000. De même pour la position et la vitesse.
-- Cette classe 'Soleil' hérite de sa classe parente tous les attributs ainsi que toutes les méthodes.
-
-"""
-class Soleil(Etoile) :
-    def __init__(self, theWorld, masse=10_000, position=(0, 0, 0), vitesse=(0, 0, 0),):
-        # super(Soleil, self) : Crée un objet de type 'super' qui représente la classe parente de la classe 'Soleil'.
-        # Puis, appelle la méthode __init__ de la classe parente 'Etoile' avec les paramètres spécifiés.
-        super(Soleil,self).__init__(theWorld, masse, position, vitesse)
-        # La couleur du soleil, c'est inchangeable !
-        self.couleur="Yellow"
-
-class Planete(Etoile) :
-    # couleurs est un attribut de classe. (RED,GREEN,BLUE)
-    couleurs=itertools.cycle([(1,0,0),(0,1,0),(0,0,1)])
-
-    def __init__(self, theWorld, masse=10,position=(0, 0, 0),vitesse=(0, 0, 0),):
-        super(Planete,self).__init__(theWorld,masse,position, vitesse)
-        """
-            Initiliase l'attribut 'couleur' de l'objet 'Planete' avec la prochaine couleur du générateur cyclique 'couleurs'.
-            Cela garantit que chaque planète a une couleur différente.
-        """
-        self.couleur=next(Planete.couleurs)
