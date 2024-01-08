@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from Univert import *
 
 
-solar_system = Univert(500)
+solar_system = Univert(400)
 
 
 body = Etoile(solar_system, 50,couleur="black",)
@@ -17,7 +17,7 @@ body = Etoile(solar_system, 80,couleur="#EC407A",)
 
 
 while True:
-    solar_system.interaction_calculateur()
+    #solar_system.interaction_calculateur()
     solar_system.update_all()
     solar_system.draw_all()
     #print(body.vitesse)
