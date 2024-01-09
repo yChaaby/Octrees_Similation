@@ -13,14 +13,14 @@ class Univert:
         # La taille du cube qui contiendra le système solaire :
         self.size = size
         # Cet attribut est une liste vide. Mais, il contiendra toutes les étoiles du système solaire prochainement !
-        #self.etoiles = []
-        # Create an Octree structure to store stars
+        self.etoiles = []
+        # Create an Octree structure to store stars first one with (0,0,0)
         self.octree = Octree((0, 0, 0), size)
         self.fig, self.ax = plt.subplots(
             1,
             1,
             subplot_kw={"projection": "3d"},  # la projection est en 3D
-            figsize=(self.size / 50, self.size / 50),
+            figsize=(self.size / 30, self.size / 50),
         )
         self.fig.tight_layout()
         self.ax.view_init(0, 0)
@@ -32,8 +32,8 @@ class Univert:
 
     # Cette méthode déplace et dessine chaque étoile du système étoile. C'est une méthode qui fait deux choses à fois !
     def update_all(self):
-        # Update stars within the Octree
-        self.octree.update_all()
+        
+        self.octree.update_all() #la mise de la structure aussi 
         self.ax.set_xlim((-self.size / 3, self.size / 3))
         self.ax.set_ylim((-self.size / 3, self.size / 3))
         self.ax.set_zlim((-self.size / 3, self.size / 3))
@@ -49,11 +49,20 @@ class Univert:
 
     # Calculer les interactions entre toutes les étoiles du systèmes solaire :
     def interaction_calculateur(self):
-        etoiles_copy = self.etoiles.copy()
-        for idx, first in enumerate(etoiles_copy):
-            for second in etoiles_copy[idx + 1:]:
-                first.accelerate_due_to_gravity(second)
-        
+        # Mettre à jour les positions des étoiles dans l'Octree
+        self.octree.update_all()
+
+        # Calculer les interactions gravitationnelles à l'intérieur de l'Octree
+        self.octree.update_recursive()
+
+        # Pour chaque étoile, appliquer les interactions gravitationnelles avec les voisins dans l'Octree
+        for star in self.octree.stars:
+            # Récupérer les voisins de l'étoile depuis l'Octree
+            neighbors = self.octree.get_neighbors(star)
+
+            # Appliquer les interactions gravitationnelles avec chaque voisin
+            for neighbor in neighbors:
+                star.accelerate_due_to_gravity(neighbor)
 class Etoile:
     # La taille minimale d'une étoile !
     min_display_size = 10
@@ -145,6 +154,8 @@ class Etoile:
         distance = Vector(*other.position) - Vector(*self.position)
         # La distance en nombre entier !
         distance_mag = distance.get_norme()
+        if distance_mag==0:
+            return
         # La force due à la gravité (F = m1*m2 / r**2) !
         force_mag = self.masse * other.masse / (distance_mag ** 2)
         speed_factor = (1.0 + self.vitesse.get_norme() + other.vitesse.get_norme()) / 2

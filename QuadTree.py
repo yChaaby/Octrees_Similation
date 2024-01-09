@@ -10,10 +10,10 @@ class Octree:
     def insert_star(self, star):
         # Check in which octant the star belongs and insert it into the corresponding child
         if len(self.stars) == 0 and all(child is None for child in self.children):
-            # If no stars or children exist, insert the star here
+            # cas cube vide
             self.stars.append(star)
         else:
-            # Determine the octant of the star
+            # trouve dans quel cube se situe l'etoile
             index = self.get_octant_index(star.position)
 
             # Create child if it doesn't exist
@@ -44,11 +44,11 @@ class Octree:
             new_size * (1 if index & 2 else -1),
             new_size * (1 if index & 4 else -1)
         )
-        # Create the child octant
+        # Creation de "child"
         self.children[index] = Octree(new_center, new_size)
 
     def update_all(self):
-        self.update_recursive()
+        pass
 
     def update_recursive(self):
         for star in self.stars:
@@ -58,3 +58,26 @@ class Octree:
         for child in self.children:
             if child is not None:
                 child.update_recursive()
+    def __repr__(self, level=0):
+        #Indentation en fonction du niveau
+        indentation = "  " * level
+        #représentation pour cet Octree
+        representation = f"{indentation}Octree(center={self.center}, size={self.size}, num_stars={len(self.stars)})"
+
+        # Appel récursif pour les enfants
+        for child in self.children:
+            if child is not None:
+                representation += f"\n{child.__repr__(level + 1)}"
+        return representation
+    def get_neighbors(self, star):
+        neighbors = [] #initialisation liste vide
+        index = self.get_octant_index(star.position)
+        # Ajout des etoiles du cube actuel
+        neighbors.extend(self.stars)
+
+        # Récursivement ajout des etoiles des cubes voisins
+        for i in range(8):
+            if self.children[i] is not None and i != index:
+                neighbors.extend(self.children[i].get_neighbors(star))
+
+        return neighbors
