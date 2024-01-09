@@ -1,5 +1,6 @@
 import math
 from random import *
+
 class Vector:
     # Un point de cet espace 3D : 
     # Placer le soleil au centre du système solaire, on utilise (0,0,0) :
