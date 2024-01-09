@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from Univert import *
 
 
-solar_system = Univert(300)
+solar_system = Univert(400)
 
 
 body = Etoile(solar_system, 50,couleur="black",)
@@ -10,6 +10,15 @@ body = Etoile(solar_system, 50,couleur="yellow",)
 body = Etoile(solar_system, 100,couleur='Pink',)
 body = Etoile(solar_system, 50,couleur="Red",)
 body = Etoile(solar_system, 50,couleur="#8C1313", )
+body = Etoile(solar_system, 100,couleur='Pink',)
+body = Etoile(solar_system, 50,couleur="Red",)
+body = Etoile(solar_system, 50,couleur="#8C1313", )
+body = Etoile(solar_system, 90,couleur="Orange", )
+body = Etoile(solar_system, 10,couleur="purple",)
+body = Etoile(solar_system, 20,couleur="#FFA200",)
+body = Etoile(solar_system, 50,couleur="#2E86C1",)
+body = Etoile(solar_system, 50,couleur="#2AB41A",)
+body = Etoile(solar_system, 50,couleur="#00FFFB",)
 body = Etoile(solar_system, 90,couleur="Orange", )
 body = Etoile(solar_system, 10,couleur="purple",)
 body = Etoile(solar_system, 20,couleur="#FFA200",)

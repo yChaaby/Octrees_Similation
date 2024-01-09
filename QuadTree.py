@@ -50,7 +50,7 @@ class Octree:
     def update_all(self):
         pass
 
-    def update_recursive(self):
+    def update_recursive(self): #useless function 
         for star in self.stars:
             star.move()
             star.draw()

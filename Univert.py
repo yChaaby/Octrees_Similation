@@ -20,7 +20,7 @@ class Univert:
             1,
             1,
             subplot_kw={"projection": "3d"},  # la projection est en 3D
-            figsize=(self.size / 30, self.size / 50),
+            figsize=(self.size / 50, self.size / 50),
         )
         self.fig.tight_layout()
         self.ax.view_init(0, 0)
@@ -30,20 +30,19 @@ class Univert:
         # Add the star to the Octree
         self.octree.insert_star(etoile)
 
-    # Cette méthode déplace et dessine chaque étoile du système étoile. C'est une méthode qui fait deux choses à fois !
+    #Cette méthode déplace et dessine chaque étoile du système étoile, fait deux choses à fois 
     def update_all(self):
-        
         self.octree.update_all() #la mise de la structure aussi 
-        self.ax.set_xlim((-self.size / 3, self.size / 3))
-        self.ax.set_ylim((-self.size / 3, self.size / 3))
-        self.ax.set_zlim((-self.size / 3, self.size / 3))
+        self.ax.set_xlim((-self.size / 2, self.size / 2))
+        self.ax.set_ylim((-self.size / 2, self.size / 2))
+        self.ax.set_zlim((-self.size / 2, self.size / 2))
         plt.pause(0.01)
         self.ax.clear()
 
     def draw_all(self):
-        self.ax.set_xlim((-self.size / 3, self.size / 3))
-        self.ax.set_ylim((-self.size / 3, self.size / 3))
-        self.ax.set_zlim((-self.size / 3, self.size / 3))
+        self.ax.set_xlim((-self.size / 2, self.size / 2))
+        self.ax.set_ylim((-self.size / 2, self.size / 2))
+        self.ax.set_zlim((-self.size / 2, self.size / 2))
         plt.pause(0.01)
         self.ax.clear()
 
@@ -136,7 +135,7 @@ class Etoile:
         # custom_marker = MarkerStyle(marker=custom_marker_path, fillstyle='none')
         self.theWorld.ax.plot(
             *self.position,
-            marker='o',
+            marker='.',
             # markersize=self.display_size + self.position[0] / 30,
             color=self.couleur
         )
