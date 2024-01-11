@@ -6,17 +6,27 @@ class Octree:
         self.size = size
         self.stars = []
         self.children = [None] * 8
+        self.total_mass = 0
 
     def insert_star(self, star):
-        # Check in which octant the star belongs and insert it into the corresponding child
-        if len(self.stars) == 0 and all(child is None for child in self.children):
-            # cas cube vide
-            self.stars.append(star)
+        # deja divisé ou pas
+        if all(child is None for child in self.children):
+            if len(self.stars) == 0:
+                # cas cube vide
+                self.stars.append(star)
+                self.total_mass += star.masse
+            else:
+                index = self.get_octant_index(star.position)
+                if self.children[index] is None:
+                    self.subdivide(index)
+                self.children[index].insert_star(star)
+                self.insert_star(self.stars[0])
+                self.stars=[]       
         else:
             # trouve dans quel cube se situe l'etoile
             index = self.get_octant_index(star.position)
 
-            # Create child if it doesn't exist
+            # si le fils n'existe pas on le cree 
             if self.children[index] is None:
                 self.subdivide(index)
 
@@ -37,7 +47,7 @@ class Octree:
 
     def subdivide(self, index):
         # Calculate the size of the new child octant
-        new_size = self.size / 2
+        new_size = (self.size / 2)
         # Calculate the new center of the child octant
         new_center = self.center + Vector(
             new_size * (1 if index & 1 else -1),
@@ -48,7 +58,8 @@ class Octree:
         self.children[index] = Octree(new_center, new_size)
 
     def update_all(self):
-        pass
+       #self.update_recursive()
+       pass
 
     def update_recursive(self): #useless function 
         for star in self.stars:
@@ -69,15 +80,31 @@ class Octree:
             if child is not None:
                 representation += f"\n{child.__repr__(level + 1)}"
         return representation
-    def get_neighbors(self, star):
-        neighbors = [] #initialisation liste vide
-        index = self.get_octant_index(star.position)
-        # Ajout des etoiles du cube actuel
-        neighbors.extend(self.stars)
+    def calculate_force(self, star):
+        # Calculez la force d'attraction gravitationnelle entre l'étoile et cet octree
+        direction = self.center - Vector(*star.position)
+        distance = direction.get_norme()
+        if distance == 0:
+            return Vector(0, 0, 0)  # Éviter une division par zéro
 
-        # Récursivement ajout des etoiles des cubes voisins
-        for i in range(8):
-            if self.children[i] is not None and i != index:
-                neighbors.extend(self.children[i].get_neighbors(star))
+        # Utilisez l'algorithme de Barnes-Hut pour calculer la force si nécessaire
+        theta = self.size / distance
+        if theta < 1:
+            # Utiliser l'approximation de Barnes-Hut
+            force =  direction * self.total_mass / (distance ** 3)
+        else:
+            # Pas assez d'éloignement, utilisez la force directe
+            force = self.calculate_direct_force(star)
 
-        return neighbors
+        return force
+
+    def calculate_direct_force(self, star):
+        # Calcule la force d'attraction gravitationnelle directe entre l'étoile et cet octree
+        direction = self.center - Vector(*star.position)
+        distance = direction.get_norme()
+        if distance == 0:
+            return Vector(0, 0, 0)  # Éviter une division par zéro
+        force = ( direction * float(self.total_mass) ) / (distance ** 3)
+        return force
+    
+    

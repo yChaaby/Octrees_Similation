@@ -12,10 +12,10 @@ class Univert:
     def __init__(self, size):
         # La taille du cube qui contiendra le système solaire :
         self.size = size
-        # Cet attribut est une liste vide. Mais, il contiendra toutes les étoiles du système solaire prochainement !
+        # Cet attribut est une liste vide. Mais, il ne contiendra plus toutes les étoiles du système solaire prochainement !
         self.etoiles = []
-        # Create an Octree structure to store stars first one with (0,0,0)
-        self.octree = Octree((0, 0, 0), size)
+        # notre structure ou on va stocker nos etoiles ( initialiser avec le centre )
+        self.octree = Octree((0, 0, 0), size/2)
         self.fig, self.ax = plt.subplots(
             1,
             1,
@@ -29,39 +29,27 @@ class Univert:
     def add_etoile(self, etoile):
         # Add the star to the Octree
         self.octree.insert_star(etoile)
+        self.etoiles.append(etoile)
 
     #Cette méthode déplace et dessine chaque étoile du système étoile, fait deux choses à fois 
     def update_all(self):
-        self.octree.update_all() #la mise de la structure aussi 
-        self.ax.set_xlim((-self.size / 2, self.size / 2))
-        self.ax.set_ylim((-self.size / 2, self.size / 2))
-        self.ax.set_zlim((-self.size / 2, self.size / 2))
-        plt.pause(0.01)
-        self.ax.clear()
+        for etoile in self.etoiles:
+            etoile.update_gravity(self.octree)
+            etoile.move()
+            etoile.draw()
+        #self.octree.update_recursive()
+        
 
     def draw_all(self):
         self.ax.set_xlim((-self.size / 2, self.size / 2))
         self.ax.set_ylim((-self.size / 2, self.size / 2))
         self.ax.set_zlim((-self.size / 2, self.size / 2))
-        plt.pause(0.01)
+        plt.pause(0.001)
         self.ax.clear()
 
     # Calculer les interactions entre toutes les étoiles du systèmes solaire :
-    def interaction_calculateur(self):
-        # Mettre à jour les positions des étoiles dans l'Octree
-        self.octree.update_all()
-
-        # Calculer les interactions gravitationnelles à l'intérieur de l'Octree
-        self.octree.update_recursive()
-
-        # Pour chaque étoile, appliquer les interactions gravitationnelles avec les voisins dans l'Octree
-        for star in self.octree.stars:
-            # Récupérer les voisins de l'étoile depuis l'Octree
-            neighbors = self.octree.get_neighbors(star)
-
-            # Appliquer les interactions gravitationnelles avec chaque voisin
-            for neighbor in neighbors:
-                star.accelerate_due_to_gravity(neighbor)
+    
+        
 class Etoile:
     # La taille minimale d'une étoile !
     min_display_size = 10
@@ -78,17 +66,19 @@ class Etoile:
     def __init__(self, theWorld, masse, couleur, position=None, vitesse=None):
         self.theWorld = theWorld
         self.masse = masse
+        INTERVALE_DEPOS=100
         # cela générera des positions et des vitesses initiales aléatoires pour chaque étoile si ces derniers ne sont pas précisés.
         if position is None:
-            position = (uniform(-100, 100), uniform(-100, 100), uniform(-100, 100))
+            position = Vector(uniform(-INTERVALE_DEPOS, INTERVALE_DEPOS), uniform(-INTERVALE_DEPOS, INTERVALE_DEPOS), uniform(-INTERVALE_DEPOS, INTERVALE_DEPOS))
         if vitesse is None:
-            vitesse = (
+            vitesse = Vector(
                 uniform(-1, 1) + uniform(-0.1, 0.1),
                 uniform(-1, 1) + uniform(-0.1, 0.1),
                 uniform(-1, 1) + uniform(-0.1, 0.1),
             )
+            
 
-        self.position = position
+        self.position = Vector(*position)
         # On convertit le tuple en Vector. l'étoile (*) pour récupérer la valeur stockée dans 'vitesse', à savoir le tuple.
         self.vitesse = Vector(*vitesse)
 
@@ -106,17 +96,13 @@ class Etoile:
     # LES MÉTHODES POUR LA CLASSE ÉTOILE :
     # 1. DÉPLACEMENT : Cette méthode redéfinit l'attribut 'position' en fonction de l'attribut 'vitesse' !
     def move(self):
-        self.position = (
-            self.position[0] + self.vitesse[0],
-            self.position[1] + self.vitesse[1],
-            self.position[2] + self.vitesse[2],
-        )
+        self.position = self.position + self.vitesse
 
         if not self.is_inside_solar_system(self.position):
             self.adjust_position()
 
     def adjust_position(self):
-        self.position = (-self.position[0],
+        self.position = Vector(-self.position[0],
                          -self.position[1],
                          -self.position[2])
 
@@ -139,6 +125,13 @@ class Etoile:
             # markersize=self.display_size + self.position[0] / 30,
             color=self.couleur
         )
+    def update_gravity(self, octree):
+        # Calculer la force gravitationnelle en utilisant l'algorithme de Barnes-Hut
+        force = octree.calculate_force(self)
+        
+        self.vitesse += force
+        # mise a jour de la position en fonction de la vitesse
+        self.position += self.vitesse
 
     # Calculer l'accélération due à la gravité :
     """
@@ -148,19 +141,4 @@ class Etoile:
     Enfin, Modifier la vitesse d'une étoile permettra de modifier la position d'une étoile dans l'espace 3D
     """
     # Les paramètres 'self' et 'other' représentent les deux étoiles en interaction :
-    def accelerate_due_to_gravity(self, other):
-        # La distance entre deux étoiles en vecteurs en utilisant la méthode __sub__ définie précédemment !
-        distance = Vector(*other.position) - Vector(*self.position)
-        # La distance en nombre entier !
-        distance_mag = distance.get_norme()
-        if distance_mag==0:
-            return
-        # La force due à la gravité (F = m1*m2 / r**2) !
-        force_mag = self.masse * other.masse / (distance_mag ** 2)
-        speed_factor = (1.0 + self.vitesse.get_norme() + other.vitesse.get_norme()) / 2
-        force = distance.normaliser() * (force_mag + speed_factor)
-        reverse = 1
-        for body in self, other:
-            acceleration = force / body.masse
-            body.vitesse += acceleration * reverse
-            reverse = -1
+   
