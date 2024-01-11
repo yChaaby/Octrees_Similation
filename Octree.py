@@ -1,6 +1,5 @@
 from vectors import Vector
 
-
 class Octree:
 
     def __init__(self, center: Vector, size: float,depth=None):

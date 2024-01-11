@@ -6,8 +6,13 @@ from vectors import Vector
 import math
 import itertools
 from random import *
+import sys
 
 class Univert:
+    def on_close(event):
+        print("Fermeture de la fenêtre")
+        sys.close()
+
     # Cette première méthode __init__ initialise un système solaire !
     def __init__(self, size):
         # La taille du cube qui contiendra le système solaire :
@@ -24,6 +29,8 @@ class Univert:
         )
         self.fig.tight_layout()
         self.ax.view_init(0, 0)
+        self.fig.canvas.mpl_connect('close_event', self.on_close)
+    
 
     # Cette méthode permet d'ajouter des étoiles en orbite au système solaire :
     def add_etoile(self, etoile):
@@ -133,12 +140,4 @@ class Etoile:
         # mise a jour de la position en fonction de la vitesse
         self.position += self.vitesse
 
-    # Calculer l'accélération due à la gravité :
-    """
-    Cette méthode calcule :
-    D'abord, La force due à la gravité entre deux étoiles (F = m1*m2 / r**2)
-    Ensuite, L'accélération à laquelle chaque étoile est soumise
-    Enfin, Modifier la vitesse d'une étoile permettra de modifier la position d'une étoile dans l'espace 3D
-    """
-    # Les paramètres 'self' et 'other' représentent les deux étoiles en interaction :
    
