@@ -34,10 +34,13 @@ class Univert:
     #Cette méthode déplace et dessine chaque étoile du système étoile, fait deux choses à fois 
     def update_all(self):
         for etoile in self.etoiles:
-            etoile.update_gravity(self.octree)
+            #etoile.update_gravity(self.octree)
             etoile.move()
             etoile.draw()
-        #self.octree.update_recursive()
+        self.octree = Octree((0, 0, 0), self.size/2)
+        for etoile in self.etoiles:
+            self.octree.insert_star(etoile)
+        
         
 
     def draw_all(self):
@@ -66,7 +69,7 @@ class Etoile:
     def __init__(self, theWorld, masse, couleur, position=None, vitesse=None):
         self.theWorld = theWorld
         self.masse = masse
-        INTERVALE_DEPOS=100
+        INTERVALE_DEPOS=200
         # cela générera des positions et des vitesses initiales aléatoires pour chaque étoile si ces derniers ne sont pas précisés.
         if position is None:
             position = Vector(uniform(-INTERVALE_DEPOS, INTERVALE_DEPOS), uniform(-INTERVALE_DEPOS, INTERVALE_DEPOS), uniform(-INTERVALE_DEPOS, INTERVALE_DEPOS))

@@ -58,7 +58,7 @@ class Octree:
         self.children[index] = Octree(new_center, new_size)
 
     def update_all(self):
-       #self.update_recursive()
+       
        pass
 
     def update_recursive(self): #useless function 
@@ -85,20 +85,21 @@ class Octree:
         direction = self.center - Vector(*star.position)
         distance = direction.get_norme()
         if distance == 0:
-            return Vector(0, 0, 0)  # Éviter une division par zéro
+            return Vector(0, 0, 0)
 
-        # Utilisez l'algorithme de Barnes-Hut pour calculer la force si nécessaire
+        #algo de Barnes-Hut pour calculer la force
         theta = self.size / distance
         if theta < 1:
-            # Utiliser l'approximation de Barnes-Hut
+            #approximation de Barnes-Hut
             force =  direction * self.total_mass / (distance ** 3)
+            
         else:
-            # Pas assez d'éloignement, utilisez la force directe
-            force = self.calculate_direct_force(star)
+            force = self.calculate_direct_methode_force(star)
+            
 
         return force
 
-    def calculate_direct_force(self, star):
+    def calculate_direct_methode_force(self, star):
         # Calcule la force d'attraction gravitationnelle directe entre l'étoile et cet octree
         direction = self.center - Vector(*star.position)
         distance = direction.get_norme()
