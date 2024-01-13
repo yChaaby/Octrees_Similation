@@ -1,4 +1,4 @@
-from vectors import Vector
+from vectors import Vector 
 
 class Octree:
     def __init__(self, center, size):
