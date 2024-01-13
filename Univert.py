@@ -5,9 +5,12 @@ from QuadTree import Octree
 from vectors import Vector
 import math
 import itertools
+from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from random import *
 
-class Univert:
+
+
+class Univers:
     # Cette première méthode __init__ initialise un système solaire !
     def __init__(self, size):
         # La taille du cube qui contiendra le système solaire :
@@ -24,7 +27,6 @@ class Univert:
         )
         self.fig.tight_layout()
         self.ax.view_init(0, 0)
-
     # Cette méthode permet d'ajouter des étoiles en orbite au système solaire :
     def add_etoile(self, etoile):
         # Add the star to the Octree
@@ -47,19 +49,67 @@ class Univert:
         self.ax.set_xlim((-self.size / 2, self.size / 2))
         self.ax.set_ylim((-self.size / 2, self.size / 2))
         self.ax.set_zlim((-self.size / 2, self.size / 2))
+        self.ax.axis('off')
         plt.pause(0.001)
         self.ax.clear()
 
     # Calculer les interactions entre toutes les étoiles du systèmes solaire :
     
-        
+    def draw_octree_from_repr(self):
+        # dessiner l'octree et ces enfants 
+        self.draw_octree(self.octree)
+
+    def draw_octree(self, octree_repr):
+        if octree_repr is not None:
+            # Dessine les limites du cube actuel
+            self.draw_boundary(octree_repr.center, octree_repr.size)
+
+            # La récursivité pour les enfants
+            for child_repr in octree_repr.children:
+                self.draw_octree(child_repr)
+
+    def draw_boundary(self, center, size):
+        # Extraire les sommets d'un cube à partir des informations de l'octree
+        vertices = [
+            (center[0] + size, center[1] + size, center[2] + size),
+            (center[0] + size, center[1] - size, center[2] + size),
+            (center[0] - size, center[1] - size, center[2] + size),
+            (center[0] - size, center[1] + size, center[2] + size),
+            (center[0] + size, center[1] + size, center[2] - size),
+            (center[0] + size, center[1] - size, center[2] - size),
+            (center[0] - size, center[1] - size, center[2] - size),
+            (center[0] - size, center[1] + size, center[2] - size)
+        ]
+
+        # Définir les faces d'un cube à l'aide des sommets
+        faces = [
+            [vertices[0], vertices[1], vertices[2], vertices[3]],
+            [vertices[4], vertices[5], vertices[6], vertices[7]],
+            [vertices[0], vertices[1], vertices[5], vertices[4]],
+            [vertices[2], vertices[3], vertices[7], vertices[6]],
+            [vertices[1], vertices[2], vertices[6], vertices[5]],
+            [vertices[0], vertices[3], vertices[7], vertices[4]]
+        ]
+
+        # Tracer les limites du cube
+        face_color = '#4D5656'
+        edge_color = '#2E4053'
+        cube_boundary = Poly3DCollection(faces, edgecolor=edge_color,facecolor=face_color, linewidths=1,alpha=0.15,antialiased=True)
+        self.ax.add_collection3d(cube_boundary)
+
+        # Ajuster les limites de l'axe
+        self.ax.set_xlim((center[0] - size, center[0] + size))
+        self.ax.set_ylim((center[1] - size, center[1] + size))
+        self.ax.set_zlim((center[2] - size, center[2] + size))     
+
+
 class Etoile:
     # La taille minimale d'une étoile !
     min_display_size = 10
     display_log_base = 1.3
 
     """
-    - theWorld : Permet de relier une étoile à un système solaire. La'rgument doit être de type 'Univert' !
+    - theWorld : Permet de relier une étoile à un système solaire. La'rgument doit être de type 'Univers' !
     - masse : Un nombre entier qui définit la masse du corps.
     - couleur : Une chaîne de caractères qui définit la couleur de l'étoile !
     - position : Est un point dans l'espace 3D définissant la position de l'étoile. La valeur par défaut est l'origine !
@@ -144,4 +194,4 @@ class Etoile:
     Enfin, Modifier la vitesse d'une étoile permettra de modifier la position d'une étoile dans l'espace 3D
     """
     # Les paramètres 'self' et 'other' représentent les deux étoiles en interaction :
-   
+
