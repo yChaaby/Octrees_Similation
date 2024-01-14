@@ -9,21 +9,21 @@ solar_system = Univers(400)
 
 
 
-'''Etoile(solar_system, 10,couleur="red",position=(10,10,10),vitesse=(0,0,0))
+Etoile(solar_system, 10,couleur="red",position=(10,10,10),vitesse=(0,0,0))
 Etoile(solar_system, 10,couleur="green",position=(-10,-10,-10),vitesse=(0,0,0))
-Etoile(solar_system, 10,couleur="yellow",position=(-20,-20,-20),vitesse=(0,0,0))'''
+Etoile(solar_system, 10,couleur="yellow",position=(-20,-20,-20),vitesse=(0,0,0))
 
 
 
 # Palette de couleurs
 cmap = plt.get_cmap("viridis")
 
-for i in range(3):
+for i in range(0):
     # Obtenir la couleur de la palette en fonction de i
     couleur = cmap(i / 29.0)  # Normalisation pour obtenir une valeur entre 0 et 1
 
     # Créer une étoile avec une couleur différente à chaque itération
-    Etoile(solar_system, 1 + i, couleur='#000000')
+    Etoile(solar_system, 10 + i, couleur='green',vitesse=(0,0,0))
 
 
 

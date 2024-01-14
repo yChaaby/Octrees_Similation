@@ -108,4 +108,65 @@ class Octree:
         force = ( direction * float(self.total_mass) ) / (distance ** 3)
         return force
     
-    
+    def remove_star(self):
+
+        if self.head is None:# cas de pere de centre 0,0,0
+            self.stars=[]
+            return
+
+    # Supprimer cette étoile de l'octree actuel
+        self.stars = []
+
+    # Vérifier le nombre de fils du parent
+        index=self.head.children.index(self)
+        self.head.children[index]=None
+          # S'il reste un seul fils, supprimer le fils, la division et réinsérer le fils
+           
+        self.equi()
+               
+
+        # Appeler la méthode remove_star sur le parent récursivement
+            #self.head.remove_star()
+    def equi(self):
+        first_octtree=self.head
+        while first_octtree.head != None:
+            first_octtree = first_octtree.head
+        pere = self.head
+        #print(pere.children)
+        
+        if pere.children.count(None) == 7:
+            #print("in",pere)
+            
+            #index = pere.children.index(pere)
+            #pere.head.children[index]=None
+            etoileTemp=None
+            for child in pere.children:
+                if child ==None:
+                    continue
+                if len(child.stars)!=0:
+                    for etoile in child.stars:
+                        etoileTemp=etoile
+                        print(etoile)
+            if etoileTemp != None:
+                first_octtree.insert_star(etoileTemp)
+            if pere.head!=None:
+                pere.head.equi()
+            else:
+                return
+        elif pere.children.count(None) == 8:
+            index = pere.head.children.index(pere)
+            pere.head.children[index]=None
+            pere.head.equi()
+        
+        else : return
+        
+    def star_inside(self):
+        x,y,z = get_first_non_none_element(self.stars).position
+        center = self.center
+        size = self.size
+        return center-size <= x <= size+center and center-size <= y <= size+center and center-size <= z <= size+center
+def get_first_non_none_element(my_list):
+    for element in my_list:
+        if element is not None:
+            return element
+    return None

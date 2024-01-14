@@ -36,9 +36,10 @@ class Univers:
     #Cette méthode déplace et dessine chaque étoile du système étoile, fait deux choses à fois 
     def update_all(self):
         for etoile in self.etoiles:
-            #etoile.update_gravity(self.octree)
+            etoile.update_gravity(self.octree)
             etoile.move()
             etoile.draw()
+        #la doit etre 
         self.octree = Octree((0, 0, 0), self.size/2)
         for etoile in self.etoiles:
             self.octree.insert_star(etoile)
@@ -101,7 +102,13 @@ class Univers:
         self.ax.set_xlim((center[0] - size, center[0] + size))
         self.ax.set_ylim((center[1] - size, center[1] + size))
         self.ax.set_zlim((center[2] - size, center[2] + size))     
-
+    def update_octtree(self):
+        for child in self.octree.iterator():
+            if len(child.stars)==1: #feuille
+                if not child.star_inside():
+                    tempStar = get_first_non_none_element(child.stars)
+                    child.remove_star()
+                    self.octree.insert_star(tempStar)
 
 class Etoile:
     # La taille minimale d'une étoile !
@@ -194,4 +201,9 @@ class Etoile:
     Enfin, Modifier la vitesse d'une étoile permettra de modifier la position d'une étoile dans l'espace 3D
     """
     # Les paramètres 'self' et 'other' représentent les deux étoiles en interaction :
-
+    
+def get_first_non_none_element(my_list):
+    for element in my_list:
+        if element is not None:
+            return element
+    return None
