@@ -92,10 +92,3 @@ class Vector:
         return self/norme
         
     
-
-
-# un petit programme de teste 
-test = Vector(1, 2, 3)
-print(test.get_norme())
-print(test.normaliser())
-print(uniform(-100,100))

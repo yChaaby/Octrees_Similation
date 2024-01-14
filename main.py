@@ -2,43 +2,55 @@ import matplotlib.pyplot as plt
 from Univert import *
 
 
-solar_system = Univert(400)
+solar_system = Univers(400)
 
 
-body = Etoile(solar_system, 50,couleur="black",)
-body = Etoile(solar_system, 50,couleur="yellow",)
-body = Etoile(solar_system, 100,couleur='Pink',)
-body = Etoile(solar_system, 50,couleur="Red",)
-body = Etoile(solar_system, 50,couleur="#8C1313", )
-body = Etoile(solar_system, 100,couleur='Pink',)
-body = Etoile(solar_system, 50,couleur="Red",)
-body = Etoile(solar_system, 50,couleur="#8C1313", )
-body = Etoile(solar_system, 90,couleur="Orange", )
-body = Etoile(solar_system, 10,couleur="purple",)
-body = Etoile(solar_system, 20,couleur="#FFA200",)
-body = Etoile(solar_system, 50,couleur="#2E86C1",)
-body = Etoile(solar_system, 50,couleur="#2AB41A",)
-body = Etoile(solar_system, 50,couleur="#00FFFB",)
-body = Etoile(solar_system, 90,couleur="Orange", )
-body = Etoile(solar_system, 10,couleur="purple",)
-body = Etoile(solar_system, 20,couleur="#FFA200",)
-body = Etoile(solar_system, 50,couleur="#2E86C1",)
-body = Etoile(solar_system, 50,couleur="#2AB41A",)
-body = Etoile(solar_system, 50,couleur="#00FFFB",)
-body = Etoile(solar_system, 50,couleur="#2E86C1",)
-body = Etoile(solar_system, 80,couleur="#A71E75",)
 
-print("before")
+
+
+
+Etoile(solar_system, 10,couleur="red",position=(10,10,10),vitesse=(0,0,0))
+Etoile(solar_system, 10,couleur="green",position=(-10,-10,-10),vitesse=(0,0,0))
+Etoile(solar_system, 10,couleur="yellow",position=(-20,-20,-20),vitesse=(0,0,0))
+
+
+
+# Palette de couleurs
+cmap = plt.get_cmap("viridis")
+
+for i in range(0):
+    # Obtenir la couleur de la palette en fonction de i
+    couleur = cmap(i / 29.0)  # Normalisation pour obtenir une valeur entre 0 et 1
+
+    # Créer une étoile avec une couleur différente à chaque itération
+    Etoile(solar_system, 10 + i, couleur='green',vitesse=(0,0,0))
+
+
+
+'''print("before")
 first = solar_system.octree.__repr__()
-print(solar_system.octree)
+print(first)'''
 
 
-while True:
-    #print("---")
-    solar_system.interaction_calculateur()
-    solar_system.draw_all()
-    if solar_system.octree.__repr__() != first:
-        print('after')
-        print(solar_system.octree)
+def on_close(event):
+    plt.close()
+    global running
+    running = False
+
+plt.gcf().canvas.mpl_connect('close_event', on_close)
+plt.show(block=False)
+
+global running
+running = True
+
+while running:
+
+   solar_system.draw_all()
+   solar_system.update_all()
+   solar_system.draw_octree_from_repr()
+   '''if solar_system.octree.__repr__() != first:
+       print('after')
+       print(solar_system.octree)'''
+       
     #plt.pause(0.001)
     #print(body.vitesse)
