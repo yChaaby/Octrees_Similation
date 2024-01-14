@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 from matplotlib.path import Path
 from matplotlib.markers import MarkerStyle
-from QuadTree import Octree
+from Octtree import Octree
 from vectors import Vector
 import math
 import itertools
@@ -39,7 +39,7 @@ class Univers:
             etoile.update_gravity(self.octree)
             etoile.move()
             etoile.draw()
-        #la doit etre 
+        #la doit etre le octtre_eupdate() ...
         self.octree = Octree((0, 0, 0), self.size/2)
         for etoile in self.etoiles:
             self.octree.insert_star(etoile)
