@@ -1,9 +1,10 @@
 from vectors import Vector
 
 class Octree:
-    def __init__(self, center, size):
+    def __init__(self, center, size, head=None):
         self.center = Vector(*center)
         self.size = size
+        self.head = head
         self.stars = []
         self.children = [None] * 8
         self.total_mass = 0
@@ -16,6 +17,8 @@ class Octree:
                 self.stars.append(star)
                 self.total_mass += star.masse
             else:
+                if get_first_non_none_element(self.stars)==star:
+                    return
                 index = self.get_octant_index(star.position)
                 if self.children[index] is None:
                     self.subdivide(index)
@@ -25,12 +28,12 @@ class Octree:
         else:
             # trouve dans quel cube se situe l'etoile
             index = self.get_octant_index(star.position)
-
+            
             # si le fils n'existe pas on le cree 
             if self.children[index] is None:
                 self.subdivide(index)
 
-            # Recursively insert the star into the appropriate child
+            #insertion d'une facon recursive 
             self.children[index].insert_star(star)
 
     def get_octant_index(self, position):
@@ -55,11 +58,38 @@ class Octree:
             new_size * (1 if index & 4 else -1)
         )
         # Creation de "child"
-        self.children[index] = Octree(new_center, new_size)
+        self.children[index] = Octree(new_center, new_size, self)
 
     def update_all(self):
        
        pass
+    def remove_star(self):
+
+        if self.head is None:# cas de pere de centre 0,0,0
+            self.stars=[]
+            return
+
+    # Supprimer cette étoile de l'octree actuel
+        self.stars = []
+
+    # Vérifier le nombre de fils du parent
+        index=self.head.children.index(self)
+        self.head.children[index]=None
+          # S'il reste un seul fils, supprimer le fils, la division et réinsérer le fils
+           
+        self.equi()
+               
+
+        # Appeler la méthode remove_star sur le parent récursivement
+            #self.head.remove_star()
+            
+    def iterator(self):
+        yield self
+        for child in self.children:
+            if child is not None:
+                yield from child.iterator()
+        
+        
 
     def update_recursive(self): #useless function 
         for star in self.stars:
@@ -98,7 +128,39 @@ class Octree:
             
 
         return force
-
+    def equi(self):
+        first_octtree=self.head
+        while first_octtree.head != None:
+            first_octtree = first_octtree.head
+        pere = self.head
+        #print(pere.children)
+        
+        if pere.children.count(None) == 7:
+            #print("in",pere)
+            
+            #index = pere.children.index(pere)
+            #pere.head.children[index]=None
+            etoileTemp=None
+            for child in pere.children:
+                if child ==None:
+                    continue
+                if len(child.stars)!=0:
+                    for etoile in child.stars:
+                        etoileTemp=etoile
+                        print(etoile)
+            if etoileTemp != None:
+                first_octtree.insert_star(etoileTemp)
+            if pere.head!=None:
+                pere.head.equi()
+            else:
+                return
+        elif pere.children.count(None) == 8:
+            index = pere.head.children.index(pere)
+            pere.head.children[index]=None
+            pere.head.equi()
+        
+        else : return
+        
     def calculate_direct_methode_force(self, star):
         # Calcule la force d'attraction gravitationnelle directe entre l'étoile et cet octree
         direction = self.center - Vector(*star.position)
@@ -107,5 +169,17 @@ class Octree:
             return Vector(0, 0, 0)  # Éviter une division par zéro
         force = ( direction * float(self.total_mass) ) / (distance ** 3)
         return force
+    def finalize(self):
+        print(self,"detruit")
+        self=None
+    def star_inside(self):
+        x,y,z = get_first_non_none_element(self.stars).position
+        center = self.center
+        size = self.size
+        return center-size <= x <= size+center and center-size <= y <= size+center and center-size <= z <= size+center
     
-    
+def get_first_non_none_element(my_list):
+    for element in my_list:
+        if element is not None:
+            return element
+    return None

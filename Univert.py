@@ -33,13 +33,14 @@ class Univert:
 
     #Cette méthode déplace et dessine chaque étoile du système étoile, fait deux choses à fois 
     def update_all(self):
-        for etoile in self.etoiles:
-            #etoile.update_gravity(self.octree)
-            etoile.move()
-            etoile.draw()
+       
         self.octree = Octree((0, 0, 0), self.size/2)
         for etoile in self.etoiles:
             self.octree.insert_star(etoile)
+            etoile.update_gravity(self.octree)
+            etoile.move()
+            etoile.draw()
+        
         
         
 
@@ -47,10 +48,18 @@ class Univert:
         self.ax.set_xlim((-self.size / 2, self.size / 2))
         self.ax.set_ylim((-self.size / 2, self.size / 2))
         self.ax.set_zlim((-self.size / 2, self.size / 2))
-        plt.pause(0.001)
+        plt.pause(0.01)
         self.ax.clear()
 
     # Calculer les interactions entre toutes les étoiles du systèmes solaire :
+    def update_octtree(self):
+        for child in self.octree.iterator():
+            if len(child.stars)==1: #feuille
+                if not child.star_inside():
+                    tempStar = get_first_non_none_element(child.stars)
+                    child.remove_star()
+                    self.octree.insert_star(tempStar)
+                
     
         
 class Etoile:
@@ -101,7 +110,7 @@ class Etoile:
     def move(self):
         self.position = self.position + self.vitesse
 
-        if not self.is_inside_solar_system(self.position):
+        if not self.is_inside_univert(self.position):
             self.adjust_position()
 
     def adjust_position(self):
@@ -110,7 +119,7 @@ class Etoile:
                          -self.position[2])
 
     # Cette méthode nous renvoie TRUE si une étoile est à l'intérieur du système solaire, sinon FALSE 
-    def is_inside_solar_system(self, position):
+    def is_inside_univert(self, position):
         x, y, z = position
         size = self.theWorld.size / 2
         return -size <= x <= size and -size <= y <= size and -size <= z <= size
@@ -125,7 +134,7 @@ class Etoile:
         self.theWorld.ax.plot(
             *self.position,
             marker='.',
-            # markersize=self.display_size + self.position[0] / 30,
+            markersize=3,
             color=self.couleur
         )
     def update_gravity(self, octree):
@@ -144,4 +153,8 @@ class Etoile:
     Enfin, Modifier la vitesse d'une étoile permettra de modifier la position d'une étoile dans l'espace 3D
     """
     # Les paramètres 'self' et 'other' représentent les deux étoiles en interaction :
-   
+def get_first_non_none_element(my_list):
+    for element in my_list:
+        if element is not None:
+            return element
+    return None
