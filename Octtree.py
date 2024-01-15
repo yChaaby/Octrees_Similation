@@ -70,32 +70,33 @@ class Octree:
             if child is not None:
                 child.update_recursive()
     def __repr__(self, level=0):
-        #Indentation en fonction du niveau
         indentation = "  " * level
         #représentation pour cet Octree
         representation = f"{indentation}Octree(center={self.center}, size={self.size}, num_stars={len(self.stars)})"
-
-        # Appel récursif pour les enfants
+        #appel pour les enfants
         for child in self.children:
             if child is not None:
                 representation += f"\n{child.__repr__(level + 1)}"
         return representation
     def calculate_force(self, star):
-        # Calculez la force d'attraction gravitationnelle entre l'étoile et cet octree
-        direction = self.center - Vector(*star.position)
-        distance = direction.get_norme()
-        if distance == 0:
-            return Vector(0, 0, 0)
-
-        #algo de Barnes-Hut pour calculer la force
-        theta = self.size / distance
-        if theta < 1:
-            #approximation de Barnes-Hut
-            force =  direction * self.total_mass / (distance ** 3)
-            
-        else:
+        # si il y a d'enfant le calcul il est direct
+        if all(child is None for child in self.children):
             force = self.calculate_direct_methode_force(star)
+        else:
+            # calcul de theta
+            direction = self.center- Vector(*star.position)
+            distance =direction.get_norme()
+            theta = self.size /distance
+
             
+            if theta < 1:# condition non verifie
+                force = self.calculate_direct_methode_force(star)
+            else:
+                # calcul recursive de la force 
+                force =Vector(0,0,0)
+                for child in self.children:
+                    if child is not None:
+                        force += child.calculate_force(star)
 
         return force
 
