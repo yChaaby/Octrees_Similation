@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
-
+#nothing special
 class Octree:
     def __init__(self, center, size, num_stars):
         self.center = center

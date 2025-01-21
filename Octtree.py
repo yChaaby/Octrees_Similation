@@ -1,5 +1,5 @@
 from vectors import Vector 
-
+#the data struct
 class Octree:
     def __init__(self, center, size):
         self.center = Vector(*center)
@@ -78,13 +78,14 @@ class Octree:
             if child is not None:
                 representation += f"\n{child.__repr__(level + 1)}"
         return representation
+    # -------------- /// Barnes-Hut Algorithm
     def calculate_force(self, star):
         # si il y a d'enfant le calcul il est direct
         if all(child is None for child in self.children):
             force = self.calculate_direct_methode_force(star)
         else:
             # calcul de theta
-            direction = self.center- Vector(*star.position)
+            direction = self.center - Vector(*star.position)
             distance =direction.get_norme()
             theta = self.size /distance
 

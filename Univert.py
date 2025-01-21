@@ -3,8 +3,6 @@ from matplotlib.path import Path
 from matplotlib.markers import MarkerStyle
 from Octtree import Octree
 from vectors import Vector
-import math
-import itertools
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 from random import *
 

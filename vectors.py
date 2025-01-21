@@ -82,7 +82,7 @@ class Vector:
         else:
             raise TypeError("La division ne peut être faite que si Vector/float")
     
-    # norme = grandeur : ||A|| : 
+    # norme = grandeur -> ||A|| : 
     def get_norme(self):
         return math.sqrt(self.x ** 2 + self.y ** 2 + self.z ** 2) # calcul de la norme
     
